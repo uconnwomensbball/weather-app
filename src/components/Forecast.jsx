@@ -103,9 +103,9 @@ setWeatherData(ApiWeatherData)
                     <p>{weatherData.current.time.toLocaleString()}</p>
                 </div>): "no location entered"}
             </div>
-        
+   
             <div className="flex flex-row gap-3">
-                <div>
+                <div className="bg-neutral-700">
                     <p>Feels Like</p>
                 </div>
                 <div>

@@ -8,9 +8,10 @@ function App() {
     <div>
       <NavBar/>
       <div className="flex flex-col justify-center items-center">
-      <h1 className="text-slate-100">How's the sky looking today?</h1>
+      <h1 className="text-stone-50 text-3xl font-bold">How's the sky looking today?</h1>
       <Forecast/>
-      </div>
+   
+    </div>
     </div>
   )
 }
