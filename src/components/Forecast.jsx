@@ -3,7 +3,7 @@ import { fetchWeatherApi } from "openmeteo";
 
 export default function Forecast(){
     const [weatherData, setWeatherData] = useState([])
-    
+    const [dailyWeatherData, setDailyWeatherData] = useState([])
 //https://geocoding-api.open-meteo.com/v1/search?name=Berlin&count=10&language=en&format=json
     async function getWeather(){
 
@@ -12,7 +12,7 @@ export default function Forecast(){
             longitude: 13.41,
             daily: ["temperature_2m_max", "temperature_2m_min"],
             hourly: "temperature_2m",
-            current: "temperature_2m",
+            current: "temperature_2m"
     }
 const url = "https://api.open-meteo.com/v1/forecast";
 const responses = await fetchWeatherApi(url, params);
@@ -76,36 +76,54 @@ console.log("\nDaily data:\n", ApiWeatherData.daily)
   };
 });
 
-console.log("days", days);
 setWeatherData(ApiWeatherData)
-
-    }
-        useEffect(()=>{
-            getWeather()
-      
-        }, [])      
   
+const cleanDailyWeatherData = ApiWeatherData.daily.time.map((time, index)=>{
+ 
+    return {
+        day: new Date(time + utcOffsetSeconds * 1000).toLocaleDateString("en-US", { weekday: "long" }), 
+        max: ApiWeatherData.daily.temperature_2m_max[index], 
+        min: ApiWeatherData.daily.temperature_2m_min[index]
+    }
+})
+ console.log("cleanDailyWeatherData", cleanDailyWeatherData)
+    
+    setDailyWeatherData(cleanDailyWeatherData)
+    
+   useEffect(()=>{
+    console.log("cleanDailyWeatherData", cleanDailyWeatherData)
+   }, [dailyWeatherData])
+}         
     
     return (
         <>
              {/* Search bar */}
-            <div className = "flex flex-row">
+            <div className = "flex flex-row text-stone-100 mb-6">
                 <img src="/icon-search.svg"/>
-                <input className="cursor-pointer" placeholder="Search for a place..."/>
-                <button className="cursor-pointer" onClick={getWeather}>Search</button>
+                <input className="cursor-pointer bg-neutral-700 mr-3 rounded-lg" placeholder="Search for a place..."/>
+                <button className="cursor-pointer bg-blue-500 px-6 py-2 rounded-lg" onClick={getWeather}>Search</button>
             </div>
 
             {/* Hero forecast container */}
-            <div className="bg-hero bg-cover">
+            <div className="flex flex-row bg-[url('/bg-today-large.svg')] bg-cover px-4 py-8 rounded-lg justify-between">
+                
                 {Object.keys(weatherData.current || {}).length > 0? (
-                <div>
-                    <h1>{weatherData.current.temperature_2m}</h1>
-                    <p>{weatherData.current.time.toLocaleString()}</p>
-                </div>): "no location entered"}
+                    <>
+                        <div>
+                            <h4 className="text-stone-100 text-xl font-bold">Berlin, Germany</h4>
+                            <p className="text-stone-300">{weatherData.current.time.toLocaleString()}</p>
+                        </div>
+                        <div className="flex flex-row items-center">
+                            <img src="/icon-sunny.webp" className="w-16"/>
+                            <h1 className="text-stone-100 text-5xl">{Math.floor(weatherData.current.temperature_2m)}°</h1>
+                        </div>
+                    </>
+                    
+                ): "no location entered"}
             </div>
    
-            <div className="flex flex-row gap-3">
-                <div className="bg-neutral-700">
+            <div className="flex flex-row gap-3 text-stone-300">
+                <div className="bg-neutral-800">
                     <p>Feels Like</p>
                 </div>
                 <div>
@@ -120,12 +138,12 @@ setWeatherData(ApiWeatherData)
             </div>
 
             {/* Daily forecast container */}
-            <div>
+            <div class="text-stone-300">
                 <h4>Daily forecast</h4>
                     {weatherData.daily?.temperature_2m_max?.length > 0? (
-                        <div className="flex flex-row">
-                            <p>{weatherData.daily.temperature_2m_max.map(temp=> Math.floor(temp))}</p>
-                            <p>{weatherData.daily.temperature_2m_min.map(temp=> Math.floor(temp))}</p>
+                        <div className="flex flex-row border gap-8">
+                            <p>max: {weatherData.daily.temperature_2m_max.map(temp=> Math.floor(temp))} min: {weatherData.daily.temperature_2m_min.map(temp=> Math.floor(temp))}</p>
+                            <p></p>
                         </div>
                 ): "no location entered"}
             </div>
